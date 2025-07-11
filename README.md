@@ -5,7 +5,7 @@ This guide explains how to convert all ELF game data from XML to JSON, ensuring 
 
 This repository package already includes:
 
-    All Python scripts required for:
+All Python scripts required for:
 
         comparing XML and JSON files
 
@@ -13,23 +13,25 @@ This repository package already includes:
 
         converting XML files to JSON
 
-    Two cleaned template JSON files:
+Two cleaned template JSON files:
 
         templates/template1.json
 
         templates/template2.json
 
 No additional setup or manual template creation is needed.
+
 ✅ How it works
+
 1. Compare XML and JSON
 
 First, check which games already exist as both XML and JSON, and which exist only as XML.
 
 Run the comparison script:
 
-    It lists all duplicate games.
+It lists all duplicate games.
 
-    It identifies XML files that have not yet been converted.
+It identifies XML files that have not yet been converted.
 
 2. Move duplicate XMLs
 
@@ -37,37 +39,37 @@ To avoid duplicate data, move any XML files that already exist as JSON into a se
 
 Run the move script:
 
-    It places duplicates into a subfolder:
+It places duplicates into a subfolder:
 
-    raw_game_data/xml/duplicates
+raw_game_data/xml/duplicates
 
 3. Convert XML to JSON
 
 Run the conversion script:
 
-    It converts all remaining XML files to JSON.
+It converts all remaining XML files to JSON.
 
-    It ensures all fields are present in the JSON, even if they’re empty.
+It ensures all fields are present in the JSON, even if they’re empty.
 
-    It writes all new JSONs into:
+It writes all new JSONs into:
 
-    raw_game_data/json/
+raw_game_data/json/
 
 ✅ Important Notes
 
-    Templates are already provided.
-    They ensure all JSONs follow the exact same structure and contain no unwanted default values.
+Templates are already provided.
+They ensure all JSONs follow the exact same structure and contain no unwanted default values.
 
-    File names matter.
-    The templates must be named:
+File names matter.
+The templates must be named:
 
-    template1.json
-    template2.json
+template1.json
+template2.json
 
-    and placed in the templates folder, as already included in the provided package.
+and placed in the templates folder, as already included in the provided package.
 
-    No manual edits are required
-    The scripts handle everything automatically.
+No manual edits are required
+The scripts handle everything automatically.
 
 ✅ Done!
 
