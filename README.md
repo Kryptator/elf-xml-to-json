@@ -97,3 +97,31 @@ They ensure all JSONs follow the exact same structure and contain no unwanted de
 
 - **File names matter.**  
 The templates must be named:
+
+template1.json
+
+template2.json
+
+and placed in the `templates` folder, as already included in the provided package.
+
+- **No manual edits are required.**  
+The scripts handle everything automatically.
+
+---
+
+## ✅ Done!
+
+After following these steps:
+
+✅ All ELF XML files will exist as JSON.  
+✅ All JSONs will match the repo’s original data model perfectly.  
+✅ No dummy stats or unexpected data remain.  
+✅ All file names follow a unified naming convention matching the repo.
+
+Your ELF data is now fully unified and ready for analysis!
+
+---
+
+**Short summary:**  
+Run the scripts in order – compare, move duplicates, convert, rename – and your XML data will become perfect JSON files ready for the repo.
+
