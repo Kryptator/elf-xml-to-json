@@ -1,6 +1,8 @@
 # ✅ ELF Game Data Conversion – Complete Guide
 
-This guide explains how to convert all ELF game data from XML to JSON, ensuring all JSON files match the exact structure used in the repository.
+This guide explains how to convert all ELF game data from XML to JSON, ensuring all JSON files match the exact structure used in the /european-league-of-football-data-repository/ repository.
+
+https://github.com/armstjc/european-league-of-football-data-repository
 
 ---
 
