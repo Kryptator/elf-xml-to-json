@@ -65,23 +65,23 @@ Note: The converted JSON files are initially stored in the XML folder to keep th
 
 ### 4. Rename New JSONs
 
-The original JSONs in the repo use a specific filename pattern where the **visitor team comes first** in the filename:
+By default, the newly converted JSONs follow the correct naming pattern where the home team comes first:
 
-{Visitor}{Home}{Season}{Round}.json
+{Home}{Visitor}{Season}{Round}.json
 
 Example:
-- Game ID: `PWCC2101` → filename: `ccpw2101.json`
+- Game ID: `PWCC2101` → filename: `pwcc2101.json`
 
-However, newly converted JSONs follow a logical convention with **home team first.** To match the repo’s historical naming, you need to rename the new JSONs accordingly.
+This matches the naming convention already used in the original JSON files in the repo.
 
-Run the rename script:
+**Therefore, no reordering of home/visitor codes is required when naming new JSONs.**
 
-- It scans all new JSONs in:
+If you want to ensure all filenames strictly follow the naming pattern, you can run the rename script. It reads the game ID inside each JSON file and renames the file accordingly to:
 
-raw_game_data/xml/
+{Home}{Visitor}{Season}{Round}.json
 
-- It renames them into the same visitor-first pattern used by existing JSONs.
-- This ensures perfect compatibility with the repo’s existing file names.
+
+This guarantees that all JSON filenames remain consistent.
 
 ---
 
