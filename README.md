@@ -7,17 +7,17 @@ This repository package already includes:
 
 All Python scripts required for:
 
-        comparing XML and JSON files
+comparing XML and JSON files
 
-        moving duplicate XMLs
+moving duplicate XMLs
 
-        converting XML files to JSON
+converting XML files to JSON
 
 Two cleaned template JSON files:
 
-        templates/template1.json
+templates/template1.json
 
-        templates/template2.json
+templates/template2.json
 
 No additional setup or manual template creation is needed.
 
