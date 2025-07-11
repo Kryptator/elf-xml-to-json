@@ -1,109 +1,118 @@
 import os
-import xml.etree.ElementTree as ET
 import json
-from collections.abc import Mapping
+import xml.etree.ElementTree as ET
+import copy
 
 repo_root = os.path.dirname(os.path.abspath(__file__))
-
 xml_folder = os.path.join(repo_root, "raw_game_data", "xml")
-template_file1 = os.path.join(repo_root, "templates", "template1.json")
-template_file2 = os.path.join(repo_root, "templates", "template2.json")
-output_folder = os.path.join(repo_root, "raw_game_data", "json")
+json_folder = xml_folder   # JSONs landen im gleichen Ordner
 
-def load_json(path):
-    with open(path, encoding="utf-8") as f:
+template_folder = os.path.join(repo_root, "templates")
+template_file1 = os.path.join(template_folder, "template1.json")
+template_file2 = os.path.join(template_folder, "template2.json")
+
+# Load JSON templates
+def load_json(filepath):
+    with open(filepath, encoding="utf-8") as f:
         return json.load(f)
-
-def deep_merge(a, b):
-    if isinstance(a, Mapping) and isinstance(b, Mapping):
-        merged = dict(a)
-        for key, val in b.items():
-            if key in merged:
-                merged[key] = deep_merge(merged[key], val)
-            else:
-                merged[key] = val
-        return merged
-    elif isinstance(a, list) and isinstance(b, list):
-        if len(a) > 0 and len(b) > 0:
-            return [deep_merge(a[0], b[0])]
-        elif len(b) > 0:
-            return [b[0]]
-        else:
-            return a
-    else:
-        return b
-
-def element_to_json(element):
-    obj = {}
-    if element.attrib:
-        obj["_attributes"] = element.attrib
-    for child in element:
-        tag = child.tag
-        child_obj = element_to_json(child)
-        if tag in obj:
-            if not isinstance(obj[tag], list):
-                obj[tag] = [obj[tag]]
-            obj[tag].append(child_obj)
-        else:
-            obj[tag] = child_obj
-    text = (element.text or "").strip()
-    if text and not obj:
-        obj["_text"] = text
-    return obj
-
-def merge_template(template, data):
-    if isinstance(template, dict) and isinstance(data, dict):
-        merged = {}
-        for key, value in template.items():
-            if key in data:
-                merged[key] = merge_template(value, data[key])
-            else:
-                merged[key] = value
-        for key in data:
-            if key not in merged:
-                merged[key] = data[key]
-        return merged
-    elif isinstance(template, list):
-        if isinstance(data, list) and data:
-            return [merge_template(template[0], item) for item in data]
-        else:
-            return []
-    else:
-        return data if data != "" else template
-
-def generate_json_filename(xml_root):
-    venue = xml_root.find("venue")
-    gameid = venue.attrib.get("gameid", "").upper()
-    if not gameid or len(gameid) < 8:
-        raise ValueError("Missing or invalid gameid.")
-    visitor = gameid[0:2].lower()
-    home = gameid[2:4].lower()
-    season = gameid[4:6]
-    round_or_week = gameid[6:].lower()
-    return f"{home}{visitor}{season}{round_or_week}.json"
 
 template1 = load_json(template_file1)
 template2 = load_json(template_file2)
-master_template = deep_merge(template1, template2)
 
-xml_files = [f for f in os.listdir(xml_folder) if f.endswith(".xml")]
+def xml_attributes(elem):
+    """
+    Converts XML element attributes into a dictionary.
+    """
+    return elem.attrib
 
-for xml_file in xml_files:
-    xml_path = os.path.join(xml_folder, xml_file)
+def parse_team(team_elem):
+    """
+    Parses a <team> element into a dict.
+    """
+    team_dict = {
+        "_attributes": team_elem.attrib
+    }
+
+    # Find <player> elements under this team
+    players = []
+    for player_elem in team_elem.findall("player"):
+        player_dict = {
+            "_attributes": player_elem.attrib
+        }
+        # Look for child elements under <player> (e.g. rcv, rush, etc.)
+        for child in list(player_elem):
+            player_dict[child.tag] = {
+                "_attributes": child.attrib
+            }
+        players.append(player_dict)
+
+    if players:
+        team_dict["player"] = players
+
+    return team_dict
+
+for filename in os.listdir(xml_folder):
+    if not filename.endswith(".xml"):
+        continue
+
+    xml_path = os.path.join(xml_folder, filename)
+    json_filename = filename.replace(".xml", ".json")
+    json_path = os.path.join(json_folder, json_filename)
+
     try:
         tree = ET.parse(xml_path)
         root = tree.getroot()
-        json_filename = generate_json_filename(root)
-        json_path = os.path.join(output_folder, json_filename)
 
-        json_data = {
-            root.tag: element_to_json(root)
+        fbgame_elem = root
+        venue_elem = fbgame_elem.find("venue")
+        team_elems = fbgame_elem.findall("team")
+
+        # Parse venue attributes
+        venue_attrs = xml_attributes(venue_elem)
+
+        # ------- MAPPING TO OLD FIELD NAMES -------
+        if "visitorid" in venue_attrs:
+            venue_attrs["visid"] = venue_attrs.pop("visitorid")
+        if "visitor" in venue_attrs:
+            venue_attrs["visname"] = venue_attrs.pop("visitor")
+        if "home" in venue_attrs:
+            venue_attrs["homename"] = venue_attrs.pop("home")
+
+        venue_dict = {
+            "_attributes": venue_attrs
         }
-        final_json = merge_template(master_template, json_data)
+
+        # Parse all teams
+        teams = []
+        for team_elem in team_elems:
+            team_dict = parse_team(team_elem)
+            teams.append(team_dict)
+
+        # Build JSON object from template
+        json_data = copy.deepcopy(template1)
+        json_data["fbgame"]["venue"] = venue_dict
+        json_data["fbgame"]["team"] = teams
+
+        # Fill any missing keys from template2
+        def fill_missing(template_obj, data_obj):
+            if isinstance(template_obj, dict):
+                for key in template_obj:
+                    if key not in data_obj:
+                        data_obj[key] = template_obj[key]
+                    else:
+                        fill_missing(template_obj[key], data_obj[key])
+            elif isinstance(template_obj, list):
+                # Skip lists for simplicity
+                pass
+
+        fill_missing(template2["fbgame"], json_data["fbgame"])
 
         with open(json_path, "w", encoding="utf-8") as f:
-            json.dump(final_json, f, indent=2, ensure_ascii=False)
+            json.dump(json_data, f, indent=2, ensure_ascii=False)
 
-        print(f"✅ Converted {xml_file} → {json_filename}")
+        print(f"✅ Converted {filename} → {json_filename}")
+
     except Exception as e:
-        print(f"❌ Error converting {xml_file}: {e}")
+        print(f"❌ Error converting {filename}: {e}")
+
+print("🎉 Conversion complete.")
