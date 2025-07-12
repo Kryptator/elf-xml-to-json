@@ -28,6 +28,8 @@ No additional setup or manual template creation is needed.
 
 ### 1. Compare XML and JSON
 
+      python compare_xml_json.py
+
 First, check which games already exist as both XML and JSON, and which exist only as XML.
 
 Run the comparison script:
@@ -38,6 +40,8 @@ Run the comparison script:
 ---
 
 ### 2. Move Duplicate XMLs
+
+      python move_duplicates.py
 
 To avoid duplicate data, move any XML files that already exist as JSON into a separate folder.
 
@@ -52,6 +56,8 @@ raw_game_data/xml/duplicates
 
 ### 3. Convert XML to JSON
 
+      python xmltojsonconverter_with_rename.py
+
 Run the conversion script:
 
 - It converts all remaining XML files to JSON.
@@ -65,6 +71,9 @@ Note: The converted JSON files are initially stored in the XML folder to keep th
 
 ---
 
+### 4. Copy
+
+Copy all newly generated files to raw_game_data/json
 
 ## ✅ Important Notes
 
