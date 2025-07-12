@@ -13,8 +13,8 @@ This repository package already includes:
 - All Python scripts required for:
   - comparing XML and JSON files
   - moving duplicate XMLs
-  - converting XML files to JSON
-  - renaming newly converted JSONs
+  - converting XML files to JSON and rename them
+
 
 - Two cleaned template JSON files:
   - `templates/template1.json`
@@ -65,32 +65,6 @@ Note: The converted JSON files are initially stored in the XML folder to keep th
 
 ---
 
-### 4. Rename New JSONs
-
-By default, the XML-to-JSON converter generates file names in this format:
-
-{Visitor}{Home}{Season}{Round}.json
-
-Example:
-- Game ID: `PWCC2101` → filename: `ccpw2101.json`
-
-However, the original JSONs in the repo use the pattern:
-
-{Home}{Visitor}{Season}{Round}.json
-
-Example:
-- Game ID: `PWCC2101` → filename: `pwcc2101.json`
-
-To keep everything consistent with the repo, the rename script automatically adjusts the file names:
-
-- It reads the game ID inside each JSON.
-- It renames the file to use the home-first format:
-
-{Home}{Visitor}{Season}{Round}.json
-
-This ensures perfect compatibility with the repo’s existing file names.
-
----
 
 ## ✅ Important Notes
 
@@ -119,8 +93,6 @@ After following these steps:
 ✅ All JSONs will match the repo’s original data model perfectly.  
 ✅ No dummy stats or unexpected data remain.  
 ✅ All file names follow a unified naming convention matching the repo.
-
-Your ELF data is now fully unified and ready for analysis!
 
 ---
 
